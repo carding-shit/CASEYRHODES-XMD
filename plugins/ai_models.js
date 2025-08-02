@@ -11,7 +11,7 @@ const fakeContact = {
   message: {
     contactMessage: {
       displayName: "CASEYRHODES | CASEYRHODES-XMD",
-      vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:CASEYRHODES | CASEYRHODES-XMD\nORG:CASEYRHODES-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
+      vcard: `BEGIN:VCARD\nVERSION:3.0\nN:Caseyrhodes verified✅;BOT;;;\nFN:Njabulo-Jb\nitem1.TEL;waid=254700000000:+254 700 000000\nitem1.X-ABLabel:Bot\nEND:VCARD`,
       jpegThumbnail: Buffer.alloc(0)
     }
   }
@@ -37,7 +37,7 @@ const customReplies = (q) => {
   const lower = q.toLowerCase();
   const today = moment().tz("Africa/Nairobi");
   if (lower.includes("caseyrhodes-xmd")) return "🔥 CASEYRHODES-XMD is a Multi-Device WhatsApp Bot made by *Caseyrhodes*.";
-  if (lower.includes("pkdriller")) return "👑CASEYRHODES-XMD is the official creator of the *Caseyrhodes* WhatsApp bot.";
+  if (lower.includes("Caseyrhodes")) return "👑CASEYRHODES-XMD is the official creator of the *Caseyrhodes* WhatsApp bot.";
   if (lower.includes("channel")) return "📢 Official channel: https://whatsapp.com/channel/0029VakUEfb4o7qVdkwPk83E";
   if (lower.includes("repo") || lower.includes("github")) return "🔗 GitHub repo: https://github.com/caseyweb/CASEYRHODES-XMD";
   if (lower.includes("date") || lower.includes("today")) return `📅 Today is ${today.format("dddd, MMMM Do YYYY")}`;
@@ -134,4 +134,3 @@ async (conn, mek, m, { q, reply, react }) => {
     reply("❌ Error occurred.");
   }
 });
-      
