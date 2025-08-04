@@ -1,7 +1,6 @@
-const {
-  cmd
-} = require("../command");
+const { cmd } = require("../command");
 const fetch = require("node-fetch");
+
 cmd({
   'pattern': 'gitclone',
   'alias': ["git"],
@@ -9,55 +8,65 @@ cmd({
   'react': '📦',
   'category': "downloader",
   'filename': __filename
-}, async (_0x359a4d, _0x5b481d, _0x310e0a, {
-  from: _0x421a7d,
-  quoted: _0x163171,
-  args: _0x216653,
-  reply: _0x11eb9d
-}) => {
-  if (!_0x216653[0x0]) {
-    return _0x11eb9d("Where is the GitHub link?\n\nExample:\n.gitclone https://github.com/caseyweb/CASEYRHODES-XMD");
+}, async (message, client, args, { from, quoted, args: commandArgs, reply }) => {
+  if (!commandArgs[0]) {
+    return reply("Where is the GitHub link?\n\nExample:\n.gitclone https://github.com/caseyweb/CASEYRHODES-XMD");
   }
-  if (!/^(https:\/\/)?github\.com\/.+/.test(_0x216653[0x0])) {
-    return _0x11eb9d("⚠️ Invalid GitHub link.");
+
+  // Validate GitHub URL
+  if (!/^(https:\/\/)?github\.com\/.+/.test(commandArgs[0])) {
+    return reply("⚠️ Invalid GitHub link. Please provide a valid GitHub repository URL.");
   }
+
   try {
-    let _0xb5560f = /github\.com\/([^\/]+)\/([^\/]+)(?:\.git)?/i;
-    let [_0x460bcd, _0x5194b2, _0x16a926] = _0x216653[0x0].match(_0xb5560f) || [];
-    if (!_0x5194b2 || !_0x16a926) {
-      throw new Error("Invalid GitHub URL.");
+    const githubRegex = /github\.com\/([^\/]+)\/([^\/]+)(?:\.git)?/i;
+    const [, username, repoName] = commandArgs[0].match(githubRegex) || [];
+    
+    if (!username || !repoName) {
+      throw new Error("Invalid GitHub URL format.");
     }
-    let _0x936878 = "https://api.github.com/repos/" + _0x5194b2 + '/' + _0x16a926 + '/zipball';
-    let _0xe6be44 = await fetch(_0x936878, {
-      'method': "HEAD"
-    });
-    if (!_0xe6be44.ok) {
-      throw new Error("Repository not found.");
+
+    const zipUrl = `https://api.github.com/repos/${username}/${repoName}/zipball`;
+    
+    // Check if repository exists
+    const headResponse = await fetch(zipUrl, { method: "HEAD" });
+    if (!headResponse.ok) {
+      throw new Error(`Repository not found or inaccessible (HTTP ${headResponse.status}).`);
     }
-    let _0x49a379 = _0xe6be44.headers.get("content-disposition");
-    let _0x481150 = _0x49a379 ? _0x49a379.match(/filename=(.*)/)[0x1] : _0x16a926 + ".zip";
-    _0x11eb9d("*📥 CASEYRHODES XMD IS DOWNLOADING REPOSITORY...*\n\n*REPOSITORY:* " + _0x5194b2 + '/' + _0x16a926 + "\n*FILENAME:* " + _0x481150 + "\n\n> *© ℂ𝔸𝕊𝔼𝕐ℝℍ𝕆𝔻𝔼𝕊-𝕏𝕄𝔻👻*");
-    await _0x359a4d.sendMessage(_0x421a7d, {
-      'document': {
-        'url': _0x936878
+
+    // Get filename from content-disposition header or use default
+    const contentDisposition = headResponse.headers.get("content-disposition");
+    let fileName = contentDisposition 
+      ? contentDisposition.match(/filename=(.*)/)[1] 
+      : `${repoName}.zip`;
+
+    // Remove quotes if present in filename
+    fileName = fileName.replace(/['"]/g, '');
+
+    reply(`*📥 Downloading Repository...*\n\n*Repository:* ${username}/${repoName}\n*Filename:* ${fileName}\n\n> *© ᴄᴀsᴇʏʀʜᴏᴅᴇs ᴛᴇᴄʜ*`);
+
+    await client.sendMessage(from, {
+      document: {
+        url: zipUrl
       },
-      'fileName': _0x481150 + ".zip",
-      'mimetype': 'application/zip',
-      'contextInfo': {
-        'mentionedJid': [_0x5b481d.sender],
-        'forwardingScore': 0x3e7,
-        'isForwarded': true,
-        'forwardedNewsletterMessageInfo': {
-          'newsletterJid': "120363302677217436@newsletter",
-          'newsletterName': "CASEYRHODES-XMD GITHUB CLONE👻",
-          'serverMessageId': 0x8f
+      fileName: fileName,
+      mimetype: 'application/zip',
+      contextInfo: {
+        mentionedJid: [message.sender],
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: "120363302677217436@newsletter",
+          newsletterName: "CASEYRHODES-XMD GITHUB CLONE",
+          serverMessageId: 143
         }
       }
     }, {
-      'quoted': _0x5b481d
+      quoted: message
     });
-  } catch (_0x12ae9b) {
-    console.error(_0x12ae9b);
-    _0x11eb9d("❌ Failed to download the repository. Please try again later.");
+
+  } catch (error) {
+    console.error("GitClone Error:", error);
+    reply(`❌ Failed to download the repository. ${error.message || "Please try again later."}`);
   }
 });
