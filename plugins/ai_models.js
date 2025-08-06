@@ -54,7 +54,7 @@ async (conn, mek, m, { from, args, q, reply, react }) => {
         
         // Send image + caption + audio combined with newsletter info
         await conn.sendMessage(from, { 
-            image: { url: `https://i.ibb.co/wN6Gw0ZF/lordcasey.jpg` },  
+            image: { url: `https://files.catbox.moe/y3j3kl.jpg` },  
             caption: status,
             contextInfo: {
                 mentionedJid: [m.sender],
